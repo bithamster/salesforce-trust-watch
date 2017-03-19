@@ -1,0 +1,52 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>Salesforce Trust Watch</title>
+
+<head>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+
+<body>
+    <fieldset>
+        <legend>Current Status</span>
+        </legend>
+        <table width='300px'>
+            <tr>
+                <td> Instance : <span id="instance"></span> </td>
+            </tr>
+            <tr>
+                <td>Status : <span id="status"></span></td>
+            </tr>
+            <tr>
+                <td>Release : <span id="releaseVersion"></span></td>
+            </tr>
+            <tr>
+                <td>Updated : <span id="updatedTime"></span></td>
+            </tr>
+        </table>
+        <button id="checkNow">Check Now</button>
+    </fieldset>
+
+    <fieldset>
+        <legend>Select Instance / Checking interval</legend>
+        <select id="instanceList">
+          <!-- filled by script -->
+        </select> /
+        <select id="checkingInterval">
+            <option label="1 min" value="1"/>
+            <option label="5 min" value="5"/>
+            <option label="10 min" value="10"/>
+            <option label="30 min" value="30"/>
+            <option label="60 min" value="60"/>
+        </select>
+        <button id="saveSettings">Save</button>
+        <div id="savedTime"></div>
+    </fieldset>
+    <div id="debug"></div>
+</body>
+
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta http-equiv="Content-Script-Type" content="text/javascript">
+<title>Salesforce Trust Watch</title>
+
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="css/common.css" type="text/css">
+    <script type="text/javascript" src="js/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="js/options.js"></script>
+</head>
+
+<body>
+    <fieldset>
+        <legend>Salesforce Trust Watch : Options</legend>
+        <p>please change settings below for your purpose.</br>settings are stored on local strage. (not sync)</p>
+        <table class="options">
+            <tr>
+                <th>Instance</th>
+                <th>Checking interval</th>
+            </tr>
+            <tr>
+                <td>
+                    <select id="instanceList">
+                    <!-- filled by script -->
+                    </select>
+                </td>
+                <td>
+                    <select id="interval">
+                    <option label="5 min" value="5"/>
+                    <option label="10 min" value="10"/>
+                    <option label="30 min" value="30"/>
+                    <option label="60 min" value="60"/>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <p id="savedMessage"></p>
+    </fieldset>
+    <div id="debug"></div>
+</body>
+
+</html>

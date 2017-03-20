@@ -12,12 +12,15 @@
 
 <body>
     <fieldset>
-        <legend>Current Status</span>
-        </legend>
-        <table width='300px'>
+
+        <legend>Salesforce Trust Watch</legend>
+        <table width='200px'>
             <tr>
-                <td> Instance : <span id="instance"></span> </td>
+                <td><b><span id="instance"></span> - <span id="location"></span></b></td>
+                <td align="right"><button id="updateTrust">Update</button></td>
             </tr>
+        </table>
+        <table>
             <tr>
                 <td>Status : <span id="status"></span></td>
             </tr>
@@ -27,24 +30,10 @@
             <tr>
                 <td>Updated : <span id="updatedTime"></span></td>
             </tr>
+            <tr>
+                <td>Detail : <a href="" id="detailedLink">Salesforce Trust Status</a></td>
+            </tr>
         </table>
-        <button id="checkNow">Check Now</button>
-    </fieldset>
-
-    <fieldset>
-        <legend>Select Instance / Checking interval</legend>
-        <select id="instanceList">
-          <!-- filled by script -->
-        </select> /
-        <select id="checkingInterval">
-            <option label="1 min" value="1"/>
-            <option label="5 min" value="5"/>
-            <option label="10 min" value="10"/>
-            <option label="30 min" value="30"/>
-            <option label="60 min" value="60"/>
-        </select>
-        <button id="saveSettings">Save</button>
-        <div id="savedTime"></div>
     </fieldset>
     <div id="debug"></div>
 </body>

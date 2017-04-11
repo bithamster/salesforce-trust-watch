@@ -157,57 +157,57 @@ function updateIcon(status) {
     switch (status) {
         case 'CHECKING':
             chrome.browserAction.setIcon({
-                path: "images/icons/checking_19.png"
+                path: "../images/icons/checking_19.png"
             });
             break;
         case 'OK':
             chrome.browserAction.setIcon({
-                path: "images/icons/healthy_19.png"
+                path: "../images/icons/healthy_19.png"
             });
             break;
         case 'MAJOR_INCIDENT_CORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/disruption_19.png"
+                path: "../images/icons/disruption_19.png"
             });
             break;
         case 'MINOR_INCIDENT_CORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/degradation_19.png"
+                path: "../images/icons/degradation_19.png"
             });
             break;
         case 'MAINTENANCE_CORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/maintenance_19.png"
+                path: "../images/icons/maintenance_19.png"
             });
             break;
         case 'INFORMATIONAL_CORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/information_19.png"
+                path: "../images/icons/information_19.png"
             });
             break;
         case 'MAJOR_INCIDENT_NONCORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/healthy_disruption_19.png"
+                path: "../images/icons/healthy_disruption_19.png"
             });
             break;
         case 'MINOR_INCIDENT_NONCORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/healthy_degradation_19.png"
+                path: "../images/icons/healthy_degradation_19.png"
             });
             break;
         case 'MAINTENANCE_NONCORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/healthy_maintenance_19.png"
+                path: "../images/icons/healthy_maintenance_19.png"
             });
             break;
         case 'INFORMATIONAL_NONCORE':
             chrome.browserAction.setIcon({
-                path: "images/icons/healthy_information_19.png"
+                path: "../images/icons/healthy_information_19.png"
             });
             break;
         default:
             chrome.browserAction.setIcon({
-                path: "images/icons/healthy_19.png"
+                path: "../images/icons/healthy_19.png"
             });
             break;
     }

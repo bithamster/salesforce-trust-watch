@@ -2,26 +2,26 @@
     "manifest_version": 2,
     "name": "Salesforce Trust Watch",
     "description": "Salesforce Trust Watch extension.",
-    "version": "1.0",
+    "version": "1.0.1",
 
     "icons": {
-        "16": "images/icons/logo_16.png",
-        "48": "images/icons/logo_48.png",
-        "128": "images/icons/logo_128.png"
+        "16": "app/images/icons/logo_16.png",
+        "48": "app/images/icons/logo_48.png",
+        "128": "app/images/icons/logo_128.png"
     },
 
     "browser_action": {
-        "default_icon": "images/icons/healthy_19.png",
+        "default_icon": "app/images/icons/healthy_19.png",
         "default_title": "Salesforce Trust Watch",
-        "default_popup": "main.html"
+        "default_popup": "app/pages/main.html"
     },
 
-    "options_page": "options.html",
+    "options_page": "app/pages/options.html",
 
     "background": {
         "scripts": [
-            "js/background.js", 
-            "js/moment-with-locales.min.js"],
+            "app/js/background.js", 
+            "lib/moment/moment-with-locales.min.js"],
         "persistent": false
     },
 

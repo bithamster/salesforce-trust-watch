@@ -1,11 +1,14 @@
 /*global chrome*/
 /*global moment*/
 
+//-------------------------------------------------
+// Setup Listener
+//-------------------------------------------------
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     chrome.storage.local.get(null, function(items) {
         switch (message.action) {
 
-            case 'renderStatus':
+            case "renderStatus":
                 renderStatus();
                 break;
         }
@@ -13,52 +16,95 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     });
 });
 
+//-------------------------------------------------
+// Call updateTrust@background.js
+//-------------------------------------------------
 function updateTrust() {
 
     //disable button
-    document.getElementById('updateTrust').disabled = true;
+    document.getElementById("update-trust-button").disabled = true;
 
-    //call updateTrust
+    //call updateTrustAll
     chrome.runtime.sendMessage({
-        action: 'updateTrust'
+        action: "updateTrust"
     });
 }
 
-function openTrustPage() {
+//-------------------------------------------------
+// Open new-Tab when "Salesforce Trust Status" link has clicked
+//-------------------------------------------------
+function openTrustPage(event) {
     chrome.storage.local.get(null, function(items) {
         chrome.tabs.create({
-            'url': 'https://status.salesforce.com/status/' + items.instanceKey
+            "url": event.target.href
         });
     });
 }
 
+//-------------------------------------------------
+// Render main.html
+//-------------------------------------------------
 function renderStatus() {
     chrome.storage.local.get(null, function(items) {
 
-        //get stored data
-        let data = items.trust;
-        let updatedTime = items.updatedTime;
+        // Loop by instanceKeys
+        items.instanceKeys.forEach(function(instanceKey, index) {
 
-        //render Current Status
-        document.getElementById('instance').innerHTML = data.key;
-        document.getElementById('location').innerHTML = data.location;
-        document.getElementById('status').innerHTML = data.status;
-        document.getElementById('releaseVersion').innerHTML = data.releaseVersion;
-        document.getElementById('updatedTime').innerHTML = updatedTime;
-        document.getElementById('updateTrust').disabled = false;
+            // Retrieve stored responce-data
+            let instanceData = items.trust[instanceKey];
 
-        //debug
-        //document.getElementById('debug').innerHTML = data;
+            // Render Current Status
+            let environment = instanceData.environment;
+            document.getElementById(environment + "-instance").innerHTML = instanceData.key;
+            document.getElementById(environment + "-releaseVersion").innerHTML = instanceData.releaseVersion;
+            document.getElementById(environment + "-status").innerHTML = instanceData.status;
+            document.getElementById(environment + "-detailedLink").title = "https://status.salesforce.com/status/" + instanceData.key;
+            document.getElementById(environment + "-detailedLink").href = "https://status.salesforce.com/status/" + instanceData.key;
+
+            // Render icon by prefix of status-string
+            let status = items.trust[instanceKey].status;
+
+            // DEBUG
+            // status = "OK";
+            // status = "MINOR_INCIDENT_CORE";
+            // status = "MAJOR_INCIDENT_CORE";
+            // status = "MAINTENANCE_CORE"
+            // status = "INFORMATIONAL_CORE"
+            // status = "UNKNOWN";
+
+            // https://status.salesforce.com/status/AP6/incidents/1620
+            // https://status.salesforce.com/status/AP6/maintenances/25677
+
+            // Substring first CAPITALs as prefix
+            let statusPrefix = /^[A-Z]+/.exec(status);
+            let svgdom = document.getElementById(environment + "-icon_" + statusPrefix);
+            if (svgdom) {
+                svgdom.classList.remove("slds-hide");
+            } else {
+                document.getElementById(environment + "-icon_OTHER").classList.remove("slds-hide");
+            }
+        });
+
+        document.getElementById("updatedTime").innerHTML = items.updatedTime;
+        document.getElementById("update-trust-button").disabled = false;
     });
 }
 
-window.addEventListener('load', function() {
+//-------------------------------------------------
+// Debug
+//-------------------------------------------------
+function debug(string) {
+    document.getElementById("debug").innerHTML = string;
+}
 
-    //setup events
-    document.getElementById('updateTrust').addEventListener('click', updateTrust, false);
-    document.getElementById('detailedLink').addEventListener('click', openTrustPage, false);
+window.addEventListener("load", function() {
 
-    //render
+    // Setup events
+    document.getElementById("update-trust-button").addEventListener("click", updateTrust, false);
+    document.getElementById("production-detailedLink").addEventListener("click", openTrustPage, false);
+    document.getElementById("sandbox-detailedLink").addEventListener("click", openTrustPage, false);
+
+    // Render
     renderStatus();
 
 }, false);

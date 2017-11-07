@@ -4,33 +4,56 @@
 chrome.runtime.onInstalled.addListener(initBackground);
 chrome.runtime.onStartup.addListener(initBackground);
 
+//-------------------------------------------------
+// Initialize chrome storage as default values, and init/reset
+//-------------------------------------------------
 function initBackground() {
-
-    //check config, init sequences
+    // Check config, init sequences
     chrome.storage.local.get(null, function(items) {
 
-        //get local as first, if undefined. set default values
-        let instanceKey = items.instanceKey || 'AP0';
+        // Get local strage, if undefined, Set default values
+        let myLocation = items.myLocation || 'APAC';
+        let instanceKeys = items.instanceKeys || ['AP0', 'CS5'];
         let intervalMin = items.intervalMin || '60';
 
-        //init(re-set) configs
+        // Restore(Init) Configs
         chrome.storage.local.set({
-            'instanceKey': instanceKey,
-            'intervalMin': intervalMin
+            'myLocation': myLocation,
+            'instanceKeys': instanceKeys,
+            'intervalMin': intervalMin,
         }, function() {
 
-            //init Instance List
+            // Init Instance List
             updateInstances();
 
-            //init Trust Data
+            // Init Trust Data
             updateTrust();
 
-            //setup new timer
+            // Setup New-Timer
             resetUpdateTrustTimer();
         });
     });
 }
 
+//-------------------------------------------------
+// Reset Update Timer to Next interval
+//-------------------------------------------------
+function resetUpdateTrustTimer() {
+    chrome.storage.local.get(null, function(items) {
+
+        //clear old timer
+        chrome.alarms.clear('updateTrustTimer');
+
+        //setup new timer
+        chrome.alarms.create('updateTrustTimer', {
+            periodInMinutes: Number(items.intervalMin)
+        });
+    });
+}
+
+//-------------------------------------------------
+// Update Trust-Status when timer ends
+//-------------------------------------------------
 chrome.alarms.onAlarm.addListener(function(alarm) {
     switch (alarm.name) {
 
@@ -40,6 +63,9 @@ chrome.alarms.onAlarm.addListener(function(alarm) {
     }
 });
 
+//-------------------------------------------------
+// Message Receiver
+//-------------------------------------------------
 chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     switch (message.action) {
 
@@ -58,23 +84,13 @@ chrome.runtime.onMessage.addListener(function(message, sender, sendResponse) {
     return true;
 });
 
-function resetUpdateTrustTimer() {
-    chrome.storage.local.get(null, function(items) {
-
-        //clear old timer
-        chrome.alarms.clear('updateTrustTimer');
-
-        //setup new timer
-        chrome.alarms.create('updateTrustTimer', {
-            periodInMinutes: Number(items.intervalMin)
-        });
-    });
-}
-
+//-------------------------------------------------
+// Retrieve Instance-List by API
+//-------------------------------------------------
 function updateInstances() {
 
     //Salesforce Trust APIs - Status.
-    let statusAPI = 'https://api.status.salesforce.com/v1/instances';
+    let instancesAPI = "https://api.status.salesforce.com/v1/instances";
     let xmlhttp = new XMLHttpRequest();
 
     xmlhttp.onreadystatechange = function() {
@@ -102,113 +118,108 @@ function updateInstances() {
                 chrome.storage.local.set({
                     'instances': data
                 });
-            }
-            else {}
-        }
-
+            } else {};
+        };
     };
-    xmlhttp.open('GET', statusAPI);
+    xmlhttp.open('GET', instancesAPI);
     xmlhttp.send();
 }
 
+//-------------------------------------------------
+// Retrieve Instance-Status by API
+//-------------------------------------------------
 function updateTrust() {
+    // Set Icon CHECKING...
+    updateIcon('CHECKING');
+
+    // Salesforce Trust APIs - Status
+    let statusAPI = "https://api.status.salesforce.com/v1/instances/status/preview";
+    let xmlhttp = new XMLHttpRequest();
+
     chrome.storage.local.get(null, function(items) {
-
-        //set Icon checking...
-        updateIcon('CHECKING');
-
-        //Salesforce Trust APIs - Status
-        let statusAPI = 'https://api.status.salesforce.com/v1/instances/' + items.instanceKey + '/status';
-        let xmlhttp = new XMLHttpRequest();
-
         xmlhttp.onreadystatechange = function() {
             if (xmlhttp.readyState == 4) {
                 if (xmlhttp.status == 200) {
 
-                    //parse JSON
+                    // Parse JSON
                     let data = JSON.parse(xmlhttp.responseText);
+
+                    // Set UpdatedTime
                     let locale = window.navigator.userLanguage || window.navigator.language;
                     let updatedTime = moment().locale(locale).format('YYYY-MM-DD HH:mm:ss');
 
-                    //update JSON data on strage.local
-                    chrome.storage.local.set({
-                        'trust': data,
-                        'updatedTime': updatedTime
+                    // Loop by item.instanceKeys
+                    let trust = {};
+                    items.instanceKeys.forEach(function(instanceKey) {
+                        // Loop by data.instance
+                        data.forEach(function(instance) {
+                            // Store selected instance data
+                            if (instance.key == instanceKey) {
+                                trust[instanceKey] = instance;
+                            }
+                        });
                     });
 
-                    //update Icon
-                    updateIcon(data.status);
+                    // Update JSON data on strage.local, then Render main.html
+                    chrome.storage.local.set({
+                        'updatedTime': updatedTime,
+                        'trust': trust,
+                    }, function() {
+                        chrome.runtime.sendMessage({
+                            action: "renderStatus",
+                        });
 
-                    //render Status
-                    chrome.runtime.sendMessage({
-                        action: 'renderStatus'
+                        // Update Icon
+                        let mainInstance = items.instanceKeys[0];
+                        updateIcon(trust[mainInstance].status);
                     });
                 }
-                else {}
-            }
-        };
-        xmlhttp.open('GET', statusAPI);
-        xmlhttp.send();
+            } else {}
+        }
     });
+    xmlhttp.open("GET", statusAPI);
+    xmlhttp.send();
 }
 
+//-------------------------------------------------
+// Change Extention-Icon based on status
+//-------------------------------------------------
 function updateIcon(status) {
-
+    let iconPath = "app/images/icons/healthy_19.png";
     switch (status) {
         case 'CHECKING':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/checking_19.png"
-            });
+            iconPath = "app/images/icons/checking_19.png";
             break;
         case 'OK':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/healthy_19.png"
-            });
+            iconPath = "app/images/icons/healthy_19.png";
             break;
         case 'MAJOR_INCIDENT_CORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/disruption_19.png"
-            });
+            iconPath = "app/images/icons/disruption_19.png";
             break;
         case 'MINOR_INCIDENT_CORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/degradation_19.png"
-            });
+            iconPath = "app/images/icons/degradation_19.png";
             break;
         case 'MAINTENANCE_CORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/maintenance_19.png"
-            });
+            iconPath = "app/images/icons/maintenance_19.png";
             break;
         case 'INFORMATIONAL_CORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/information_19.png"
-            });
+            iconPath = "app/images/icons/information_19.png";
             break;
         case 'MAJOR_INCIDENT_NONCORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/healthy_disruption_19.png"
-            });
+            iconPath = "app/images/icons/healthy_disruption_19.png";
             break;
         case 'MINOR_INCIDENT_NONCORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/healthy_degradation_19.png"
-            });
+            iconPath = "app/images/icons/healthy_degradation_19.png";
             break;
         case 'MAINTENANCE_NONCORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/healthy_maintenance_19.png"
-            });
+            iconPath = "app/images/icons/healthy_maintenance_19.png";
             break;
         case 'INFORMATIONAL_NONCORE':
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/healthy_information_19.png"
-            });
-            break;
-        default:
-            chrome.browserAction.setIcon({
-                path: "app/images/icons/healthy_19.png"
-            });
+            iconPath = "app/images/icons/healthy_19.png";
             break;
     }
+
+    chrome.browserAction.setIcon({
+        path: iconPath
+    });
 }

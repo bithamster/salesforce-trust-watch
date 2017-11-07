@@ -1,44 +1,169 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
+<html xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
 <meta http-equiv="Content-Script-Type" content="text/javascript">
 <title>Salesforce Trust Watch</title>
 
 <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="css/common.css" type="text/css">
-    <script type="text/javascript" src="../../lib/moment/moment-with-locales.min.js"></script>
-    <script type="text/javascript" src="../js/options.js"></script>
+  <meta charset="utf-8">
+  <link href="../slds/assets/styles/salesforce-lightning-design-system.min.css" rel="stylesheet" type="text/css"></link>
+  <link href="../styles/common.css" rel="stylesheet" type="text/css"></link>
+  <script type="text/javascript" src="../js/moment-with-locales.min.js"></script>
+  <script type="text/javascript" src="../js/options.js"></script>
 </head>
 
 <body>
-    <fieldset>
-        <legend>Salesforce Trust Watch : Options</legend>
-        <p>please change settings below for your purpose.</br>settings are stored on local strage. (not sync)</p>
-        <table class="options">
-            <tr>
-                <th>Instance</th>
-                <th>Checking interval</th>
-            </tr>
-            <tr>
-                <td>
-                    <select id="instanceList">
-                    <!-- filled by script -->
-                    </select>
-                </td>
-                <td>
-                    <select id="interval">
-                    <option label="5 min" value="5"/>
-                    <option label="10 min" value="10"/>
-                    <option label="30 min" value="30"/>
-                    <option label="60 min" value="60"/>
-                    </select>
-                </td>
-            </tr>
-        </table>
-        <p id="savedMessage"></p>
-    </fieldset>
-    <div id="debug"></div>
+  <div class="slds-scope">
+
+    <div class="slds-tabs_default">
+      <ul class="slds-tabs_default__nav" role="tablist">
+        <li class="slds-tabs_default__item slds-is-active" title="Option Tabs" role="presentation">
+          <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="0" id="tab-salesforce-trust__item">Salesforce Trust</a></li>
+        <!--
+          <li class="slds-tabs_default__item" title="Item Two" role="presentation">
+          <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-2" id="tab-default-2__item">Item Two</a></li>
+          <li class="slds-tabs_default__item" title="Item Three" role="presentation">
+          <a class="slds-tabs_default__link" href="javascript:void(0);" role="tab" tabindex="-1" aria-selected="false" aria-controls="tab-default-3" id="tab-default-3__item">Item Three</a></li>
+        -->
+      </ul>
+      <div id="tab-salesforce-trust" class="slds-tabs_default__content slds-show" role="tabpanel">
+        <div class="slds-p-around_small">
+
+          <div class="slds-text-heading_small slds-p-bottom_small">
+            <p>Please change settings below for your purpose.</p>
+            <p>Settings are stored on local strage. (cannot sync between your devices)</p>
+          </div>
+
+          <div class="slds-box slds-p-around_small" style="width: 660px;">
+            <div class="slds-text-heading_large slds-text-title_caps">
+              <p><strong>Server Instances to Watch</strong></p>
+            </div>
+
+            <div class="slds-form slds-form_compound slds-p-top_small slds-p-right_small">
+              <div class="slds-form-element__group">
+                <div class="slds-p-vertical_x-small">
+
+                  <div class="slds-form-element__row">
+
+                    <div class="slds-form-element slds-size_1-of-3">
+                      <legend class="slds-form-element__label slds-text-title_caps">Location</legend>
+                      <label class="slds-form-element__label" for="location-list"><abbr class="slds-required" title="required">*</abbr> Select your region</label>
+                      <div class="" id="location-list__error">
+                        <div class="slds-form-element__control">
+                          <div class="slds-select_container">
+                            <select class="slds-select" id="location-list" required=""><!-- filled by script --></select>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="slds-form-element__group">
+                <div class="slds-p-vertical_x-small">
+
+                  <div class="slds-form-element__row">
+
+                    <div class="slds-form-element slds-size_1-of-3">
+                      <legend class="slds-form-element__label slds-text-title_caps">Production</legend>
+                      <label class="slds-form-element__label" for="production-instance-list"><abbr class="slds-required" title="required">*</abbr> Instance Name</label>
+                      <div class="" id="production-instance-list__error">
+                        <div class="slds-form-element__control">
+                          <div class="slds-select_container">
+                            <select class="slds-select" id="production-instance-list" required=""><!-- filled by script --></select>
+                          </div>
+                        </div>
+                        <div class="slds-form-element__help slds-hide" id="production-instance-list__message">This field is required</div>
+                      </div>
+                    </div>
+
+                    <div class="slds-form-element slds-size_1-of-3">
+                      <legend class="slds-form-element__label slds-text-title_caps">Sandbox</legend>
+                      <label class="slds-form-element__label" for="sandbox-instance-list"><abbr class="slds-required" title="required">*</abbr> Instance Name</label>
+                      <div class="" id="sandbox-instance-list__error">
+                        <div class="slds-form-element__control">
+                          <div class="slds-select_container">
+                            <select class="slds-select" id="sandbox-instance-list" required=""><!-- filled by script --></select>
+                          </div>
+                        </div>
+                        <div class="slds-form-element__help slds-hide" id="sandbox-instance-list__message">This field is required</div>
+                      </div>
+                    </div>
+
+                    <div class="slds-form-element slds-size_1-of-3">
+                      <legend class="slds-form-element__label slds-text-title_caps">Checking Interval</legend>
+                      <label class="slds-form-element__label" for="interval-list"><abbr class="slds-required" title="required">*</abbr> Minutes (applied to both)</label>
+                      <div class="slds-form-element__control">
+                        <div class="slds-select_container">
+                          <select class="slds-select" id="interval-list" required="">
+                              <option label="5 min" value="5"/>
+                              <option label="10 min" value="10"/>
+                              <option label="30 min" value="30"/>
+                              <option label="60 min" value="60"/>
+                              <option label="120 min" value="120"/>
+                            </select>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+
+                <div class="slds-form-element__row">
+
+                  <div class="slds-p-top_small slds-p-right_large">
+                    <button class="slds-button slds-button_brand" id="option-save-button" disabled="">
+                      <svg class="slds-button__icon slds-button__icon_left">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#check"/>
+                      </svg>Save
+                    </button>
+                  </div>
+
+                  <div class="slds-p-top_small">
+                    <button class="slds-button slds-button_neutral" id="option-cancel-button" disabled="">
+                      <svg class="slds-button__icon slds-button__icon_left">
+                        <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#close"/>
+                      </svg>Cancel
+                    </button>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+
+          <div id="savedMessage" class="slds-transition-hide" style="height: 4rem;">
+            <div class="slds-notify_container slds-is-relative">
+              <div class="slds-notify slds-notify_toast slds-theme_success" role="alert">
+                <span class="slds-assistive-text">Success</span>
+                <span class="slds-icon_container slds-icon-utility-success slds-m-right_small slds-no-flex slds-align-top" title="Success">
+                  <svg class="slds-icon slds-icon_small">
+                    <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#success"/>
+                  </svg>
+                </span>
+                <div class="slds-notify__content">
+                  <h2 class="slds-text-heading_small">Options successfully saved.</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="debug"></div>
+        </div>
+      </div>
+      <!--
+      <div id="tab-default-2" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-default-2__item">Item Two Content</div>
+      <div id="tab-default-3" class="slds-tabs_default__content slds-hide" role="tabpanel" aria-labelledby="tab-default-3__item">Item Three Content</div>
+    -->
+    </div>
+
+
+
+  </div>
 </body>
 
 </html>

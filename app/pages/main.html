@@ -5,37 +5,119 @@
 <title>Salesforce Trust Watch</title>
 
 <head>
-    <meta charset="utf-8">
-    <script type="text/javascript" src="../../lib/moment/moment-with-locales.min.js"></script>
-    <script type="text/javascript" src="../js/main.js"></script>
+  <meta charset="utf-8">
+  <link href="../slds/assets/styles/salesforce-lightning-design-system.min.css" rel="stylesheet" type="text/css"></link>
+  <link href="../styles/common.css" rel="stylesheet" type="text/css"></link>
+  <script type="text/javascript" src="../js/moment-with-locales.min.js"></script>
+  <script type="text/javascript" src="../js/main.js"></script>
 </head>
 
 <body>
-    <fieldset>
+  <div class="slds-scope">
+    <div style="width: 370px;">
 
-        <legend>Salesforce Trust Watch</legend>
-        <table width='200px'>
-            <tr>
-                <td><b><span id="instance"></span> - <span id="location"></span></b></td>
-                <td align="right"><button id="updateTrust">Update</button></td>
-            </tr>
-        </table>
-        <table>
-            <tr>
-                <td>Status : <span id="status"></span></td>
-            </tr>
-            <tr>
-                <td>Release : <span id="releaseVersion"></span></td>
-            </tr>
-            <tr>
-                <td>Updated : <span id="updatedTime"></span></td>
-            </tr>
-            <tr>
-                <td>Detail : <a href="" id="detailedLink">Salesforce Trust Status</a></td>
-            </tr>
-        </table>
-    </fieldset>
+      <article class="slds-card slds-m-around_x-small slds-p-around_x-small">
+        <div class="slds-grid slds-grid_align-spread slds-has-flexi-truncate">
+          <div class="slds-tile__detail slds-p-left_xx-small slds-text-body_regular slds-text-color_weak" style="display: flex; align-items: center;">
+            <h2><span>Updated : </span><span id="updatedTime">YYYY-MM-SS HH:MI:SS</span></h2>
+          </div>
+          <button class="slds-button slds-button_brand slds-button_neutral" id="update-trust-button">Update</button>
+        </div>
+      </article>
+
+      <article class="slds-card slds-m-around_x-small slds-p-around_small">
+        <article class="slds-tile slds-media">
+          <div class="slds-media__figure">
+            <span class="slds-icon_container">
+            <!-- icons switched by script -->
+            <svg class="slds-icon slds-hide slds-icon-standard-location" id="production-icon_OK">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#success" width="23" height="23" x="4.5" y="4.5"/>
+            </svg>
+            <svg class="slds-icon slds-hide slds-icon-standard-opportunity" id="production-icon_MINOR">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#warning" width="23" height="23" x="4.5" y="4.5"/>
+            </svg>
+            <svg class="slds-icon slds-hide slds-icon-standard-reward" id="production-icon_MAJOR">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#clear" width="23" height="23" x="4.5" y="4.5"/>
+            </svg>
+            <svg class="slds-icon slds-hide slds-icon-standard-recent" id="production-icon_MAINTENANCE">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#custom_apps" width="23" height="23" x="4.5" y="4.5"/>
+              <svg class="slds-icon slds-hide slds-icon-standard-template" id="production-icon_INFORMATIONAL">
+            </svg>
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#info" width="23" height="23" x="4.5" y="4.5"/>
+            </svg>
+            <svg class="slds-icon slds-hide slds-icon-standard-default" id="production-icon_OTHER">
+              <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/standard-sprite/svg/symbols.svg#default"/>
+            </svg>
+          </span>
+          </div>
+          <div class="slds-media__body">
+            <div class="slds-tile__title slds-m-bottom_xx-small" title="Instance Infomation" style="display: flex; align-items: center;">
+              <span class="slds-text-heading_medium" id="production-instance">XX00</span>
+              <span class="slds-badge slds-m-left_small" id="production-releaseVersion">release Version</span>
+            </div>
+            <div class="slds-tile__detail">
+              <dl class="slds-list_horizontal slds-wrap">
+                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Status">Status:</dt>
+                <dd class="slds-item_detail slds-truncate" title="Status Value" id="production-status">Status State</dd>
+                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Detail">Detail:</dt>
+                <dd class="slds-item_detail slds-truncate" title="">
+                  <a href="" id="production-detailedLink">Salesforce Trust Status</a>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </article>
+      </article>
+
+      <article class="slds-card slds-m-around_x-small slds-p-around_small">
+        <article class="slds-tile slds-media">
+          <div class="slds-media__figure">
+            <span class="slds-icon_container">
+              <!-- icons switched by script -->
+              <svg class="slds-icon slds-hide slds-icon-standard-location" id="sandbox-icon_OK">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#success" width="23" height="23" x="4.5" y="4.5"/>
+              </svg>
+              <svg class="slds-icon slds-hide slds-icon-standard-opportunity" id="sandbox-icon_MINOR">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#warning" width="23" height="23" x="4.5" y="4.5"/>
+              </svg>
+              <svg class="slds-icon slds-hide slds-icon-standard-reward" id="sandbox-icon_MAJOR">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#clear" width="23" height="23" x="4.5" y="4.5"/>
+              </svg>
+              <svg class="slds-icon slds-hide slds-icon-standard-recent" id="sandbox-icon_MAINTENANCE">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#custom_apps" width="23" height="23" x="4.5" y="4.5"/>
+              </svg>
+              <svg class="slds-icon slds-hide slds-icon-standard-template" id="sandbox-icon_INFORMATIONAL">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/utility-sprite/svg/symbols.svg#info" width="23" height="23" x="4.5" y="4.5"/>
+              </svg>
+              <svg class="slds-icon slds-hide slds-icon-standard-default" id="sandbox-icon_OTHER">
+                <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="../slds/assets/icons/standard-sprite/svg/symbols.svg#default"/>
+              </svg>
+            </span>
+          </div>
+          <div class="slds-media__body">
+            <div class="slds-tile__title slds-m-bottom_xx-small" title="Instance Infomation" style="display: flex; align-items: center;">
+              <span class="slds-text-heading_medium" id="sandbox-instance">XX00</span>
+              <span class="slds-badge slds-m-left_small" id="sandbox-releaseVersion">release Version</span>
+            </div>
+            <div class="slds-tile__detail">
+              <dl class="slds-list_horizontal slds-wrap">
+                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Status">Status:</dt>
+                <dd class="slds-item_detail slds-truncate" title="Status Value" id="sandbox-status">Status State</dd>
+                <dt class="slds-item_label slds-text-color_weak slds-truncate" title="Detail">Detail:</dt>
+                <dd class="slds-item_detail slds-truncate" title="">
+                  <a href="" id="sandbox-detailedLink">Salesforce Trust Status</a>
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </article>
+      </article>
+
+    </div>
+
     <div id="debug"></div>
+  </div>
+  </div>
 </body>
 
 </html>
